@@ -1,0 +1,25 @@
+{
+  "name": "Game_Project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "parcel-bundler": "^1.8.1",
+    "phaser": "^3.7.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manhtran2103/Jack-MagicBean_V1.0.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/manhtran2103/Jack-MagicBean_V1.0/issues"
+  },
+  "homepage": "https://github.com/manhtran2103/Jack-MagicBean_V1.0#readme"
+}
