@@ -20,11 +20,11 @@
     var config = {
         type: Phaser.AUTO,
         width: 800,
-        height: 600,
+        height: 800,
         physics: {
         default: 'arcade',
         arcade: {
-            gravity: { y: 30 },
+            gravity: { y: 300 },
             debug: false
         }
         },
@@ -64,23 +64,27 @@ function create ()
 {
 
 //CREATE BACKGROUND
-this.add.image(400, 300, 'sky');
+this.add.image(400, 400, 'sky').setScale(2);
 
 // CREATE MOVEABLE PLATFORMS 
-var platforms = this.physics.add.group({
-    gravityY: 0,
+var platforms = this.physics.add.staticGroup({
+
 });
 
-//var cloudplatform = platforms.create(500, 400, 'cloud-platform');
-var grass = platforms.create(150, 250, 'grass-platform');
-var ice = platforms.create(550, 220, 'ice-platform');
-var cloud = platforms.create(100, 500, 'cloud-platform');
-//var green = platforms.create(400, 620, 'green-platform').setScale(2);
+var cloud1 = platforms.create(200, 300, 'cloud-platform');
+var cloud2 = platforms.create(600, 300, 'cloud-platform');
+
+var ice1 = platforms.create(200, 600, 'ice-platform');
+var ice2 = platforms.create(600, 600, 'ice-platform');
+
+var grass1 = platforms.create(400, 500, 'grass-platform');
+var grass2 = platforms.create(400, 750, 'grass-platform');
+
 
 
 // CREATE UNMOVEABLE PLATFORMS
-var stationary = this.add.staticsGroup();
-var green = stationary.create(400, 568, 'green-platform').setScale(2).refreshBody();
+// var stationary = this.physics.add.staticGroup();
+// var green = stationary.create(400, 568, 'green-platform').setScale(2).refreshBody();
 
 
 
@@ -92,7 +96,7 @@ var green = stationary.create(400, 568, 'green-platform').setScale(2).refreshBod
 // platforms.setAll('body.velocity.x', 100);
 
 // PLAYER
-player = this.physics.add.sprite(100, 450, 'dude');
+player = this.physics.add.sprite(400, 550, 'dude');
 
 player.setBounce(0.2);
 player.setCollideWorldBounds(true);
@@ -183,11 +187,11 @@ function collectStar (player, star)
 
             child.enableBody(true, Phaser.Math.Between(400, 800), 0, true, true);
 
-        bombs = this.physics.add.group({
-        key: 'bomb',
-        repeat: 5,
-        setXY: { x: 150, y: 400, stepX: 100 },
-});
+//         bombs = this.physics.add.group({
+//         key: 'bomb',
+//         repeat: 5,
+//         setXY: { x: 150, y: 400, stepX: 100 },
+// });
         });}
 }
 
