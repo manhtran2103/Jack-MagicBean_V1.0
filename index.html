@@ -83,8 +83,8 @@ var grass2 = platforms.create(400, 750, 'grass-platform');
 
 
 // CREATE UNMOVEABLE PLATFORMS
-// var stationary = this.physics.add.staticGroup();
-// var green = stationary.create(400, 568, 'green-platform').setScale(2).refreshBody();
+var stationary = this.physics.add.staticGroup();
+var green = stationary.create(400, 850, 'green-platform').setScale(2).refreshBody();
 
 
 
@@ -136,7 +136,7 @@ stars = this.physics.add.group({
 
 stars.children.iterate(function (child) {
 
-    child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+    child.setBounceY(Phaser.Math.FloatBetween(0.2, 0.4));
 
 });
 
@@ -144,7 +144,7 @@ this.physics.add.collider(stars, platforms);
 
 this.physics.add.overlap(player, stars, collectStar, null, this);
 
-this.physics.add.overlap(player, stars, destroyStar, null, this);
+this.physics.add.overlap(green, stars, destroyStar, null, this);
 
 // SCORE
 scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
@@ -171,9 +171,24 @@ function hitBomb (player, bomb)
     gameOver = true;
 }
 
-function destroyStar(){
+function destroyStar(green, star)
+{
+    star.disableBody(true, true);
 
+    if (stars.countActive(true) === 0)
+    {
+        stars.children.iterate(function (child) {
+
+            child.enableBody(true, Phaser.Math.Between(400, 800), 0, true, true);
+
+//         bombs = this.physics.add.group({
+//         key: 'bomb',
+//         repeat: 5,
+//         setXY: { x: 150, y: 400, stepX: 100 },
+// });
+        });}
 }
+
 function collectStar (player, star)
 {
     star.disableBody(true, true);
