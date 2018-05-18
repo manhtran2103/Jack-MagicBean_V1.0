@@ -67,33 +67,27 @@ function create ()
 this.add.image(400, 400, 'sky').setScale(2);
 
 // CREATE MOVEABLE PLATFORMS 
-var platforms = this.physics.add.staticGroup({
-
-});
+var platforms = this.physics.add.staticGroup({});
 
 var cloud1 = platforms.create(200, 300, 'cloud-platform');
 var cloud2 = platforms.create(600, 300, 'cloud-platform');
-
 var ice1 = platforms.create(200, 600, 'ice-platform');
 var ice2 = platforms.create(600, 600, 'ice-platform');
-
-var grass1 = platforms.create(400, 500, 'grass-platform');
+var grass1 = platforms.create(400, 450, 'grass-platform');
 var grass2 = platforms.create(400, 750, 'grass-platform');
 
 
 
 // CREATE UNMOVEABLE PLATFORMS
 var stationary = this.physics.add.staticGroup();
-var green = stationary.create(400, 850, 'green-platform').setScale(2).refreshBody();
 
+var green = stationary.create(400, 831, 'green-platform').setScale(2).refreshBody();
+var shipBeige = stationary.create(100, 70, 'shipBeige');
+var shipBlue = stationary.create(250, 80, 'shipBlue');
+var shipGreen = stationary.create(400, 70, 'shipGreen');
+var shipPink = stationary.create(550, 70, 'shipPink');
+var shipYellow = stationary.create(700, 70, 'shipYellow');
 
-
-// var spawnpoint = 50
-//cloudplatform.x 
-//Phaser.Math.Between(spawnpoint - 10, spawnpoint + 10);
-// platforms.setAll('body.allowGravity', false);
-// platforms.setAll('body.immovable', true);
-// platforms.setAll('body.velocity.x', 100);
 
 // PLAYER
 player = this.physics.add.sprite(400, 550, 'dude');
@@ -146,30 +140,12 @@ this.physics.add.overlap(player, stars, collectStar, null, this);
 
 this.physics.add.overlap(green, stars, destroyStar, null, this);
 
-// SCORE
-scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+this.physics.add.collider(player, green, fallDown, null, this);
 
+this.physics.add.collider(player, stationary);
 
-// BOMB
-bombs = this.physics.add.group();
+this.physics.add.collider(player, stationary, hitAlien, null, this);
 
-this.physics.add.collider(bombs, platforms);
-
-this.physics.add.collider(player, bombs, hitBomb, null, this);
-
-
-}
-
-function hitBomb (player, bomb)
-{
-    this.physics.pause();
-
-    player.setTint(0xff0000);
-
-    player.anims.play('turn');
-
-    gameOver = true;
-}
 
 function destroyStar(green, star)
 {
@@ -181,12 +157,20 @@ function destroyStar(green, star)
 
             child.enableBody(true, Phaser.Math.Between(400, 800), 0, true, true);
 
-//         bombs = this.physics.add.group({
-//         key: 'bomb',
-//         repeat: 5,
-//         setXY: { x: 150, y: 400, stepX: 100 },
-// });
-        });}
+        });
+        
+        var spawnpoint = 800;
+        var a = Phaser.Math.Between(5, 12);
+        
+        for (var i = 0; i < a; i++){
+
+        var bomb = bombs.create((i+1)*spawnpoint/a, 100, 'bomb');
+        bomb.setCollideWorldBounds(true);
+        bomb.allowGravity = false;
+
+        }
+        }
+    
 }
 
 function collectStar (player, star)
@@ -202,14 +186,75 @@ function collectStar (player, star)
 
             child.enableBody(true, Phaser.Math.Between(400, 800), 0, true, true);
 
-//         bombs = this.physics.add.group({
-//         key: 'bomb',
-//         repeat: 5,
-//         setXY: { x: 150, y: 400, stepX: 100 },
-// });
-        });}
+        });
+
+        var spawnpoint = 800;
+        var a = Phaser.Math.Between(5, 12);
+        
+        for (var i = 0; i < a; i++){
+
+        var bomb = bombs.create((i+1)*spawnpoint/a, 100, 'bomb');
+        bomb.setCollideWorldBounds(true);
+        bomb.allowGravity = false;
+
+        }
+        }
 }
 
+// SCORE
+scoreText = this.add.text(16, 750, 'score: 0', { fontSize: '32px', fill: '#000' });
+
+
+// BOMB
+bombs = this.physics.add.group();
+
+this.physics.add.collider(player, bombs, hitBomb, null, this);
+
+this.physics.add.overlap(green, bombs, destroyBomb, null, this);
+
+
+function destroyBomb(green, bomb)
+{
+    bomb.disableBody(true, true); 
+}
+
+}
+
+//HIT BOMB
+function hitBomb (player, bomb)
+{
+    this.physics.pause();
+
+    player.setTint(0x006400);
+
+    player.anims.play('turn');
+
+    gameOver = true;
+}
+
+// HIT ALIENS
+function hitAlien (player, stationary)
+{
+    this.physics.pause();
+
+    player.setTint(0x006400);
+
+    player.anims.play('turn');
+
+    gameOver = true;
+}
+
+//FALLING
+function fallDown(player, green)
+{
+    this.physics.pause();
+
+    player.setTint(0x006400);
+
+    player.anims.play('turn');
+
+    gameOver = true;
+}
 
 function update ()
 {
@@ -235,7 +280,7 @@ else
 
 if (cursors.up.isDown && player.body.touching.down)
 {
-    player.setVelocityY(-530);
+    player.setVelocityY(-450);
 }
 
 }
