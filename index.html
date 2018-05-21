@@ -39,14 +39,18 @@ var game = new Phaser.Game(config);
 
 var score = 0;
 var scoreText;
-
+var nbullet = 0;
+var bulletText;
+var baddies = 5;
 function preload ()
 {
+    this.load.image('logo', './assets/logo.png');
     this.load.image('sky', './assets/sky.png');
     this.load.image('cloud-platform', './assets/cloud-platform.png');
     this.load.image('ufo', './assets/ufo.png');
     this.load.image('star', './assets/star.png');
     this.load.image('bomb', './assets/bomb.png');
+    this.load.image('bullet', './assets/bullet.png');
     this.load.image('green-platform', './assets/green-platform.png');
     this.load.image('grass-platform', './assets/grass-platform.png');
     this.load.image('ice-platform', './assets/ice-platform.png');
@@ -82,11 +86,11 @@ var grass2 = platforms.create(400, 750, 'grass-platform');
 var stationary = this.physics.add.staticGroup();
 
 var green = stationary.create(400, 831, 'green-platform').setScale(2).refreshBody();
-var shipBeige = stationary.create(100, 70, 'shipBeige');
-var shipBlue = stationary.create(250, 80, 'shipBlue');
-var shipGreen = stationary.create(400, 70, 'shipGreen');
-var shipPink = stationary.create(550, 70, 'shipPink');
-var shipYellow = stationary.create(700, 70, 'shipYellow');
+var shipBeige = stationary.create(100, 70, 'shipBeige').setScale(0.7).refreshBody();
+var shipBlue = stationary.create(250, 80, 'shipBlue').setScale(0.7).refreshBody();
+var shipGreen = stationary.create(400, 70, 'shipGreen').setScale(0.7).refreshBody();
+var shipPink = stationary.create(550, 70, 'shipPink').setScale(0.7).refreshBody();
+var shipYellow = stationary.create(700, 70, 'shipYellow').setScale(0.7).refreshBody();
 
 
 // PLAYER
@@ -122,10 +126,11 @@ this.physics.add.collider(player, platforms);
 cursors = this.input.keyboard.createCursorKeys();
 
 //STAR
+
 stars = this.physics.add.group({
     key: 'star',
-    repeat: 1,
-    setXY: { x: 150, y: 200, stepX: 300},
+    repeat: 2,
+    setXY: { x: 50, y: 100, stepX: 100},
 });
 
 stars.children.iterate(function (child) {
@@ -142,11 +147,10 @@ this.physics.add.overlap(green, stars, destroyStar, null, this);
 
 this.physics.add.collider(player, green, fallDown, null, this);
 
-this.physics.add.collider(player, stationary);
-
-this.physics.add.collider(player, stationary, hitAlien, null, this);
+this.physics.add.overlap(player, stationary, hitAlien, null, this);
 
 
+// DESTROY
 function destroyStar(green, star)
 {
     star.disableBody(true, true);
@@ -155,16 +159,16 @@ function destroyStar(green, star)
     {
         stars.children.iterate(function (child) {
 
-            child.enableBody(true, Phaser.Math.Between(400, 800), 0, true, true);
+            child.enableBody(true, Phaser.Math.Between(100, 400), 0, true, true);
 
         });
         
-        var spawnpoint = 800;
-        var a = Phaser.Math.Between(5, 12);
+        var spawnpoint = 700;
+        var nBomb = Phaser.Math.Between(5, 9);
         
-        for (var i = 0; i < a; i++){
+        for (var i = 0; i < nBomb; i++){
 
-        var bomb = bombs.create((i+1)*spawnpoint/a, 100, 'bomb');
+        var bomb = bombs.create((i+1)*spawnpoint/nBomb, 100, 'bomb');
         bomb.setCollideWorldBounds(true);
         bomb.allowGravity = false;
 
@@ -173,12 +177,15 @@ function destroyStar(green, star)
     
 }
 
+// COLLECT STARS
 function collectStar (player, star)
 {
     star.disableBody(true, true);
 
     score += 10;
+    nbullet += 0.2;
     scoreText.setText('Score: ' + score);
+    bulletText.setText('Bullet: ' + nbullet);
 
     if (stars.countActive(true) === 0)
     {
@@ -188,12 +195,12 @@ function collectStar (player, star)
 
         });
 
-        var spawnpoint = 800;
-        var a = Phaser.Math.Between(5, 12);
+        var spawnpoint = 700;
+        var nBomb = Phaser.Math.Between(5, 9);
         
-        for (var i = 0; i < a; i++){
+        for (var i = 0; i < nBomb; i++){
 
-        var bomb = bombs.create((i+1)*spawnpoint/a, 100, 'bomb');
+        var bomb = bombs.create((i+1)*spawnpoint/nBomb, 100, 'bomb');
         bomb.setCollideWorldBounds(true);
         bomb.allowGravity = false;
 
@@ -203,7 +210,7 @@ function collectStar (player, star)
 
 // SCORE
 scoreText = this.add.text(16, 750, 'score: 0', { fontSize: '32px', fill: '#000' });
-
+bulletText = this.add.text(550, 750, 'Bullet: 0', { fontSize: '32px', fill: '#000' });
 
 // BOMB
 bombs = this.physics.add.group();
@@ -218,7 +225,42 @@ function destroyBomb(green, bomb)
     bomb.disableBody(true, true); 
 }
 
+// BULLET
+bullets = this.physics.add.group({
+    gravityY: -300,
+    collideWorldBounds: true,
+    });
+
+this.physics.add.collider(bullets, platforms, destroyBullet, null, this);
+
+this.physics.add.collider(bullets, shipBeige, destroyBeige, null, this);
+
+this.physics.add.collider(bullets, shipBlue, destroyBeige, null, this);
+
+this.physics.add.collider(bullets, shipGreen, destroyBeige, null, this);
+
+this.physics.add.collider(bullets, shipPink, destroyBeige, null, this);
+
+this.physics.add.collider(bullets, shipYellow, destroyBeige, null, this);
+
+
+// UFO
+var ufos = this.physics.add.group({
+    bounceX: 1,
+    bounceY: 1,
+    collideWorldBounds: true,
+    gravityY: -300,
+    });
+
+this.physics.add.collider(player, ufos, hitUfo, null, this);
+
+for (var i = 0; i < 5; i++){
+ var ufo = ufos.create(Phaser.Math.Between(0, 800), Phaser.Math.Between(0, 400), 'ufo');
+ ufo.setVelocity(Phaser.Math.Between(-200, 200), Phaser.Math.Between(-200, 200));
 }
+
+
+} // CREATER FUNTION
 
 //HIT BOMB
 function hitBomb (player, bomb)
@@ -242,7 +284,68 @@ function hitAlien (player, stationary)
     player.anims.play('turn');
 
     gameOver = true;
+
 }
+
+// Platforms Destroy Bullet
+function destroyBullet (bullet, Platforms)
+{
+    bullet.disableBody(true, true); 
+}
+
+// Destroy shipBeige
+function destroyBeige (bullet, stationary)
+{
+    stationary.disableBody(true, true); 
+    bullet.disableBody(true, true);
+    baddies -= 1; 
+    
+}
+
+// Destroy shipBlue
+function destroyBeige (bullet, stationary)
+{
+    stationary.disableBody(true, true); 
+    bullet.disableBody(true, true); 
+    baddies -= 1; 
+
+}
+
+// Destroy shipGreen
+function destroyBeige (bullet, stationary)
+{
+    stationary.disableBody(true, true); 
+    bullet.disableBody(true, true);
+    baddies -= 1; 
+    
+}
+
+// Destroy shipPink
+function destroyBeige (bullet, stationary)
+{
+    stationary.disableBody(true, true); 
+    bullet.disableBody(true, true); 
+    baddies -= 1; 
+
+}
+
+// Destroy shipYellow
+function destroyBeige (bullet, stationary)
+{
+    stationary.disableBody(true, true); 
+    bullet.disableBody(true, true);
+    baddies -= 1; 
+ 
+}
+
+// HIT UFO
+function hitUfo (player, ufo)
+    {
+        this.physics.pause();
+        player.setTint(0xff0000);
+        player.anims.play('turn');
+        gameOver = true;
+    }
 
 //FALLING
 function fallDown(player, green)
@@ -261,13 +364,13 @@ function update ()
 
 if (cursors.left.isDown)
 {
-    player.setVelocityX(-160);
+    player.setVelocityX(-200);
 
     player.anims.play('left', true);
 }
 else if (cursors.right.isDown)
 {
-    player.setVelocityX(160);
+    player.setVelocityX(200);
 
     player.anims.play('right', true);
 }
@@ -282,9 +385,28 @@ if (cursors.up.isDown && player.body.touching.down)
 {
     player.setVelocityY(-450);
 }
-
+if (cursors.down.isDown && nbullet>=1)
+{
+    var bullet = bullets.create(player.x, player.y, 'bullet');
+    bullet.setCollideWorldBounds(true);
+    bullet.allowGravity = false;
+    bullet.setTint(0x9400d3);  
+    bullet.setVelocity(0, -500); 
+    nbullet -= 1;
+    bulletText.setText('Bullet: ' + nbullet);
 }
 
+if (baddies == 0){
+
+    this.physics.pause();
+    
+    player.anims.play('turn');
+
+    gameOver = true;
+
+    this.logoSprite = this.physics.add.sprite(400, 300, "logo");
+}
+}
 
 </script>
 </body>
